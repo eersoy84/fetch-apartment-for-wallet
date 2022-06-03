@@ -4,6 +4,9 @@ import { models } from "@worldwidewebb/tsoa-shared";
 import { CollectionTokens } from "src/models/collectionTokens";
 import retry from "async-await-retry";
 import Moralis from "moralis/node";
+import { Token } from "@worldwidewebb/shared-messages/nfts";
+import { WORLDWIDE_WEBB_APARTMENT_ADDRESS } from "src/utils";
+import { InternalError } from "@worldwidewebb/tsoa-shared/dist/models";
 
 @Injectable()
 export class MoralisService implements OnModuleInit {
@@ -33,67 +36,50 @@ export class MoralisService implements OnModuleInit {
     this.logger.verbose("Initializing Moralis...");
   }
 
-  async fetchAvatarsForAddress(chain: string, address: string): Promise<CollectionTokens[]> {
+  async fetchApartmentsForAddress(chain: string, address: string): Promise<Token[]> {
     if (chain != "eth") return [];
 
     // Paginate Web3API
-    const nfts = [];
+    const apartments: Token[] = [];
     let total = 0;
+    let cursor: string | undefined = undefined;
     do {
-      let data;
       try {
-        data = await retry(
+        const data = await retry(
           async () => {
-            return await Moralis.Web3API.account.getNFTs({
+            return await Moralis.Web3API.account.getNFTsForContract({
               chain,
               address,
-              // offset: nfts.length,
+              token_address: WORLDWIDE_WEBB_APARTMENT_ADDRESS,
+              cursor,
             });
           },
           undefined,
           { interval: 2000, retriesMax: 5 }
         );
+
+        if (!data || !data.result) {
+          break;
+        }
+        if (data.total) {
+          total = data.total;
+        }
+
+        const results = data.result.map((result: any) => ({
+          id: result.token_id,
+          url: "",
+          amount: 1,
+          metadata: result.metadata || "",
+        }));
+
+        apartments.push(...results);
+        cursor = data.cursor;
       } catch (err) {
         console.error(err);
-        throw new models.InternalError();
+        throw new InternalError();
       }
+    } while (apartments.length < total);
 
-      if (!data || !data.result) {
-        break;
-      }
-
-      if (data.total) {
-        total = data.total;
-      }
-
-      nfts.push(...data.result);
-    } while (nfts.length < total);
-
-    // decode
-    const ownedCollections: { [collectionAddress: string]: CollectionTokens } = {};
-    nfts.forEach((nft) => {
-      if (!(nft.token_address in ownedCollections)) {
-        ownedCollections[nft.token_address] = {
-          collection: {
-            address: {
-              value: nft.token_address,
-              chain,
-            },
-            collectionName: nft.name,
-            openseaSlug: "",
-            symbol: nft.symbol,
-          },
-          tokens: [],
-        };
-      }
-      ownedCollections[nft.token_address].tokens.push({
-        id: nft.token_id,
-        url: nft.token_uri || "",
-        amount: parseFloat(nft.amount || "0"),
-        metadata: nft.metadata || "",
-      });
-    });
-
-    return Object.values(ownedCollections);
+    return apartments;
   }
 }

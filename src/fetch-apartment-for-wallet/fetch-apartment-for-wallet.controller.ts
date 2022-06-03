@@ -8,6 +8,6 @@ export class FetchApartmentForWalletController {
 
   @EventPattern("fetch.apartment.for.wallet.request")
   handleNftForWalletRequest(@Payload(new ValidationPipe()) data: any) {
-    this.fetchApartmentForWalletService.handleNftForWalletRequest(data.value);
+    this.fetchApartmentForWalletService.handleApartmentForWalletRequest(data.value);
   }
 }

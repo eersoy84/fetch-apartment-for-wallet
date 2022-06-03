@@ -1,8 +1,8 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
 import { ClientKafka } from "@nestjs/microservices";
-import { FETCH_APARTMENT_DATA_SERVICE, MoralisAvatarAddress } from "src/app.constants";
-import { NftForWalletRequestDto } from "src/dto";
-import { CollectionTokens } from "src/models/collectionTokens";
+import { Token } from "@worldwidewebb/shared-messages/nfts";
+import { ApartmentForAddressObj, FETCH_APARTMENT_DATA_SERVICE } from "src/app.constants";
+import { WalletRequestDto } from "src/dto";
 import { MoralisService } from "src/moralis/moralis.service";
 
 @Injectable()
@@ -13,20 +13,19 @@ export class FetchApartmentForWalletService {
     @Inject(FETCH_APARTMENT_DATA_SERVICE) private readonly fetchApartmentDataClient: ClientKafka
   ) {}
 
-  async handleNftForWalletRequest(value: NftForWalletRequestDto) {
+  async handleApartmentForWalletRequest(value: WalletRequestDto) {
+    //
     const { userId, chain, address } = value;
-    const moralisAvatarAddresses: CollectionTokens[] = await this.moralisService.fetchAvatarsForAddress(chain, address);
-    this.logger.verbose("Apartment For Wallet");
-    this.fetchApartmentDataClient.emit("apartment.data.request", moralisAvatarAddresses);
+    const apartmentsForAddress: Token[] = await this.moralisService.fetchApartmentsForAddress(chain, address);
+    this.logger.verbose("Emitting apartment for wallet address event...");
+    console.log("apartmentsforAddress", apartmentsForAddress);
 
-    // moralisAvatarAddresses.map((ownedCollection) => {
-    //   let moralisAvatarAddressObj: MoralisAvatarAddress = {
-    //     userId,
-    //     ownedCollection,
-    //     chain,
-    //     address,
-    //   };
-    //   this.fetchApartmentDataClient.emit("apartment.data.request", moralisAvatarAddressObj);
-    // });
+    apartmentsForAddress.map((apartment: Token) => {
+      let apartmentForAddressObj: ApartmentForAddressObj = {
+        userId,
+        apartment,
+      };
+      this.fetchApartmentDataClient.emit("apartment.data.request", apartmentForAddressObj);
+    });
   }
 }

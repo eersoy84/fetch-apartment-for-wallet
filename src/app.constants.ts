@@ -1,9 +1,7 @@
-import { CollectionTokens } from "./models/collectionTokens";
+import { Token } from "@worldwidewebb/shared-messages/nfts";
 
-export type MoralisAvatarAddress = {
+export type ApartmentForAddressObj = {
   userId: string;
-  ownedCollection: CollectionTokens;
-  chain: string;
-  address: string;
+  apartment: Token;
 };
 export const FETCH_APARTMENT_DATA_SERVICE = "FETCH_APARTMENT_DATA_SERVICE";
