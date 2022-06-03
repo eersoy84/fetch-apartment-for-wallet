@@ -15,11 +15,11 @@ import { FETCH_APARTMENT_DATA_SERVICE } from "src/app.constants";
         transport: Transport.KAFKA,
         options: {
           client: {
-            clientId: "fetchApartmentForWallet",
+            clientId: "fetchApartmentData",
             brokers: [process.env.KAFKA_BROKER_URL],
           },
           consumer: {
-            groupId: "fetch.apartment.data.consumer",
+            groupId: "apartment_data_request_consumer",
           },
           producer: {},
         },

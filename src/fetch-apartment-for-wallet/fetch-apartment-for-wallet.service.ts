@@ -17,6 +17,7 @@ export class FetchApartmentForWalletService {
     const { userId, chain, address } = value;
     const moralisAvatarAddresses: CollectionTokens[] = await this.moralisService.fetchAvatarsForAddress(chain, address);
     this.logger.verbose("Apartment For Wallet");
+    this.fetchApartmentDataClient.emit("apartment.data.request", moralisAvatarAddresses);
 
     // moralisAvatarAddresses.map((ownedCollection) => {
     //   let moralisAvatarAddressObj: MoralisAvatarAddress = {
