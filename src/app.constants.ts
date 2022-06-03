@@ -6,4 +6,4 @@ export type MoralisAvatarAddress = {
   chain: string;
   address: string;
 };
-export const FILTER_NFT_DATA_SERVICE = "FILTER_NFT_DATA_SERVICE";
+export const FETCH_APARTMENT_DATA_SERVICE = "FETCH_APARTMENT_DATA_SERVICE";

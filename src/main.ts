@@ -10,7 +10,7 @@ async function bootstrap() {
         brokers: [process.env.KAFKA_BROKER_URL],
       },
       consumer: {
-        groupId: "fetch_nft_data_for_wallet_consumer", //must be same to
+        groupId: "fetch_apartment_for_wallet_consumer", //must be same to
         retry: {
           retries: 2,
           initialRetryTime: 3000,
