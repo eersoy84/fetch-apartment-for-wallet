@@ -5,3 +5,4 @@ export type ApartmentForAddressObj = {
   apartment: Token;
 };
 export const FETCH_APARTMENT_DATA_SERVICE = "FETCH_APARTMENT_DATA_SERVICE";
+export const WALLET_REQUEST_TOPIC = process.env.WALLET_REQUEST_TOPIC || "wallet.request";

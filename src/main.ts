@@ -7,10 +7,11 @@ async function bootstrap() {
     transport: Transport.KAFKA,
     options: {
       client: {
-        brokers: [process.env.KAFKA_BROKER_URL],
+        // brokers: [process.env.KAFKA_BROKER_URL],
+        brokers: [process.env.KAFKA_BROKER_URL, process.env.KAFKA_BROKER_URL2],
       },
       consumer: {
-        groupId: "fetch_apartment_for_wallet_consumer", //must be same to
+        groupId: "apartment_wallet_request_consumer", //must be same to
         retry: {
           retries: 2,
           initialRetryTime: 3000,

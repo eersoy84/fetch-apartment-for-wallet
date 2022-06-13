@@ -18,7 +18,6 @@ export class FetchApartmentForWalletService {
     const { userId, chain, address } = value;
     const apartmentsForAddress: Token[] = await this.moralisService.fetchApartmentsForAddress(chain, address);
     this.logger.verbose("Emitting apartment for wallet address event...");
-    console.log("apartmentsforAddress", apartmentsForAddress);
 
     apartmentsForAddress.map((apartment: Token) => {
       let apartmentForAddressObj: ApartmentForAddressObj = {
