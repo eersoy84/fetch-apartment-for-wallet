@@ -9,8 +9,7 @@ export class FetchApartmentForWalletController {
 
   @EventPattern(WALLET_REQUEST_TOPIC)
   handleNftForWalletRequest(@Payload(new ValidationPipe()) data: any) {
-    Logger.verbose("apartment-wallet-request");
-    console.log(data);
-    this.fetchApartmentForWalletService.handleApartmentForWalletRequest(data.value);
+    const { value, partition } = data;
+    this.fetchApartmentForWalletService.handleApartmentForWalletRequest(value, partition);
   }
 }
